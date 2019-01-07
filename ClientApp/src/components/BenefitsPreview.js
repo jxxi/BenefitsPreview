@@ -9,9 +9,11 @@ export class BenefitsPreview extends Component {
 
         this.state = {
             numEmployees: 0,
+            addEmployees: true,
+            employeeForms: [],
             selectValue: 1,
-            employees: [{}],
-            dependents: {},
+            employees: [],
+            dependents: [],
             quote: null
         };
     }
@@ -124,6 +126,7 @@ export class BenefitsPreview extends Component {
 
         let employee = this.state.employees.find(emp => emp.id === empNum);
         employee.dependents.push({ id: dependentNum, firstName: "", lastName: "", discount: 0, cost: 500 });
+        this.setState({ addEmployees: false });
 
         let form =
             (
@@ -177,27 +180,29 @@ export class BenefitsPreview extends Component {
     }
 
     calculateCosts = () => {
-        let employees = this.state.employees;
 
-        for (var i = 0; i < employees.length; i++) {
+        for (var i = 0; i < this.state.numEmployees; i++) {
+            let employees = this.state.employees;
             let employee = employees[i];
             let dependents = employee.dependents;
             let dependentCost = 0;
-            let totalCost = 0;
 
-            for (var j = 0; j < dependents.length; j++) {
-                dependentCost += this.getUserCost(dependents[j]);
+            if (dependents != null) {
+                for (var j = 0; j < dependents.length; j++) {
+                    if (dependents[j])
+                        dependentCost += this.getUserCost(dependents[j]);
+                }
             }
 
-            totalCost = this.getUserCost(employee) + dependentCost;
-            employee.cost = totalCost;
+            employee.cost = this.getUserCost(employee);
+            employee.totalCost = employee.cost + dependentCost;
         }
     }
 
     displayTotal = () => {
         this.calculateCosts();
 
-        this.state.quote = 
+        let quote = 
         (
             <Table responsive>
                 <thead>
@@ -206,35 +211,39 @@ export class BenefitsPreview extends Component {
                         <th>Account Type</th>
                         <th>Discount</th>
                         <th>Cost</th>
-                        <th>Total for Year</th>
+                        <th>Total Per Year</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {this.state.employees.map(emp => 
-                        <div>
+                
+                    {this.state.employees.map(emp =>
+                        <tbody>
                             <tr key={emp.firstName}>
-                                <td>{emp.firstName} + " " + {emp.lastName}</td>
+                                <td>{emp.firstName + " " + emp.lastName}</td>
                                 <td>Employee</td>
                                 <td>{emp.discount}</td>
                                 <td>{emp.cost}</td>
+                                <td>{emp.totalCost}</td>
                             </tr>
-                            
-                            { emp.dependents.map(dep =>
-                                    <tr key={dep.firstName}>
-                                        <td>{dep.firstName} + " " + {dep.lastName}</td>
-                                        <td>Dependent</td>
-                                        <td>{dep.discount}</td>
-                                        <td>{dep.cost}</td>
-                                    </tr>
+                            {emp.dependents.map(dep =>
+                                <tr key={dep.firstName}>
+                                    <td>{dep.firstName + " " + dep.lastName}</td>
+                                    <td>Dependent</td>
+                                    <td>{dep.discount}</td>
+                                    <td>{dep.cost}</td>
+                                </tr>
+                                
                             )}
-                        </div>
-                    )}
-                </tbody>
+                        </tbody>
+                )}
+            
             </Table>
-        );
+            );
+
+        this.setState({ quote: quote });
     }
 
     employeeForm = () => {
+
         let form = [];
 
         if (this.state.numEmployees === 0) {
@@ -242,22 +251,22 @@ export class BenefitsPreview extends Component {
         }
 
         else {
-            for (var i = 1; i <= this.state.numEmployees; i++)
-            {
+            for (var i = 1; i <= this.state.numEmployees; i++) {
                 form.push(this.employeeFormTemplate(i));
 
-                this.state.employees.push(
-                    {
-                        id: i,
-                        firstName: "",
-                        lastName: "",
-                        discount: 0,
-                        cost: 1000,
-                        dependents: [{}]
-                    }
-                );
+                if (this.state.addEmployees) {
+                    this.state.employees.push(
+                        {
+                            id: i,
+                            firstName: "",
+                            lastName: "",
+                            discount: 0,
+                            cost: 1000,
+                            dependents: []
+                        }
+                    );
+                }
             }
-
             form.push(this.submitFormButton());
         }
 

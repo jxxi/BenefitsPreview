@@ -18,24 +18,6 @@ export class BenefitsPreview extends Component {
         };
     }
 
-    applyNameDiscount = (user) => {
-        if(user.firstName.startsWith("A")) {
-            user.discount = .10 * user.cost;
-        }
-
-        else {
-            user.discount = 0;
-        }
-    }
-
-    addNumEmployees = e => {
-        this.setState({ numEmployees: this.state.selectValue });
-    }
-
-    handleChange = e => {
-        this.setState({ selectValue: e.target.value });
-    }
-
     updateFirstName = (empNum, event) => {
         let employee = this.state.employees.find(emp => emp.id === empNum);
         employee.firstName = event.target.value;
@@ -175,6 +157,17 @@ export class BenefitsPreview extends Component {
         )
     }
 
+
+    applyNameDiscount = (user) => {
+        if (user.firstName.startsWith("A")) {
+            user.discount = .10 * user.cost;
+        }
+
+        else {
+            user.discount = 0;
+        }
+    }
+
     getUserCost = (user) => {
         return user.cost - user.discount;
     }
@@ -273,6 +266,10 @@ export class BenefitsPreview extends Component {
         return form;
     }
 
+    addNumEmployees = e => {
+        this.setState({ numEmployees: this.state.selectValue });
+    }
+
     employeeNumberForm = () => {
         if (this.state.numEmployees === 0) {
             return (
@@ -304,9 +301,15 @@ export class BenefitsPreview extends Component {
         }
     }
 
+
     submitHandler = e => {
         e.preventDefault();
     }
+
+    handleChange = e => {
+        this.setState({ selectValue: e.target.value });
+    }
+
 
     render() {
         if (!this.state.quote) {

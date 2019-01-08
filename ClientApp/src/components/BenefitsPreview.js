@@ -110,7 +110,7 @@ export class BenefitsPreview extends Component {
         {
             let divider =
                 (
-                    <Row>
+                    <Row key="dependents">
                         <hr />
                         <Col md={12}>
                             <ControlLabel>Dependents</ControlLabel>
@@ -216,7 +216,7 @@ export class BenefitsPreview extends Component {
                 </thead>
                 
                     {this.state.employees.map(emp =>
-                        <tbody>
+                        <tbody key="emp">
                             <tr key={emp.firstName}>
                                 <td>{emp.firstName + " " + emp.lastName}</td>
                                 <td>Employee</td>
